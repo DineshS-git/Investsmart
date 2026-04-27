@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvestSmart — India Investment Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-900: #0a1628;
+  --blue-800: #0d2044;
+  --blue-700: #1035a0;
+  --blue-600: #1a47c8;
+  --blue-500: #2563eb;
+  --blue-400: #3b82f6;
+  --blue-300: #93c5fd;
+  --blue-100: #dbeafe;
+  --blue-50:  #eff6ff;
+  --white: #ffffff;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-400: #94a3b8;
+  --gray-600: #475569;
+  --gray-800: #1e293b;
+  --green: #10b981;
+  --green-light: #d1fae5;
+  --orange: #f59e0b;
+  --orange-light: #fef3c7;
+  --shadow-sm: 0 1px 3px rgba(10,22,40,0.08);
+  --shadow-md: 0 4px 16px rgba(10,22,40,0.10);
+  --shadow-blue: 0 8px 30px rgba(37,99,235,0.22);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 8px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-800);
+  min-height: 100vh;
+}
+
+/* NAV */
+.navbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 20px;
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.nav-brand { display:flex; align-items:center; gap:10px; }
+.nav-logo {
+  width:36px; height:36px;
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-800));
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px;
+  box-shadow: var(--shadow-blue);
+}
+.nav-title {
+  font-family:'Clash Display',sans-serif;
+  font-size:19px; font-weight:700;
+  color:var(--blue-900); letter-spacing:-0.3px;
+}
+.nav-title span { color:var(--blue-500); }
+.nav-tag {
+  font-size:10px; font-weight:700;
+  background:var(--blue-50); color:var(--blue-600);
+  border:1px solid var(--blue-100);
+  padding:3px 9px; border-radius:20px;
+  letter-spacing:0.3px;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(140deg, var(--blue-900) 0%, var(--blue-700) 55%, var(--blue-500) 100%);
+  padding: 32px 20px 52px;
+  text-align:center; position:relative; overflow:hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 15% 85%, rgba(255,255,255,0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 15%, rgba(255,255,255,0.04) 0%, transparent 40%);
+}
+.hero-pill {
+  display:inline-block;
+  font-size:11px; font-weight:700; letter-spacing:1.5px;
+  color:var(--blue-300); text-transform:uppercase;
+  margin-bottom:12px;
+}
+.hero h1 {
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(24px,6vw,38px); font-weight:700;
+  color:var(--white); letter-spacing:-0.5px; line-height:1.15;
+  margin-bottom:10px; position:relative;
+}
+.hero p {
+  color:rgba(255,255,255,0.65); font-size:13.5px;
+  max-width:320px; margin:0 auto; line-height:1.65; position:relative;
+}
+
+/* STAT CHIPS */
+.stats-row {
+  display:flex; gap:10px;
+  padding:0 16px;
+  margin-top:-26px; margin-bottom:20px;
+  position:relative; z-index:10;
+  overflow-x:auto; scrollbar-width:none;
+}
+.stats-row::-webkit-scrollbar { display:none; }
+.stat-chip {
+  flex:1; min-width:80px;
+  background:var(--white);
+  border-radius:12px; padding:12px 8px;
+  text-align:center;
+  box-shadow:var(--shadow-md);
+  border:1px solid var(--gray-100);
+}
+.stat-chip .val {
+  font-family:'Clash Display',sans-serif;
+  font-size:15px; font-weight:700; color:var(--blue-600);
+}
+.stat-chip .lbl {
+  font-size:9px; color:var(--gray-400); font-weight:700;
+  text-transform:uppercase; letter-spacing:0.5px; margin-top:2px;
+}
+
+/* MAIN */
+.main { padding:0 16px 100px; }
+
+/* TABS */
+.tab-scroll {
+  display:flex; gap:8px; margin-bottom:20px;
+  overflow-x:auto; scrollbar-width:none; padding-bottom:2px;
+}
+.tab-scroll::-webkit-scrollbar { display:none; }
+.tab-btn {
+  flex-shrink:0;
+  display:flex; align-items:center; gap:6px;
+  padding:9px 18px;
+  border-radius:24px;
+  border:1.5px solid var(--gray-200);
+  background:var(--white);
+  color:var(--gray-600);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px; font-weight:700;
+  cursor:pointer; transition:all 0.2s;
+  white-space:nowrap;
+  box-shadow:var(--shadow-sm);
+}
+.tab-btn.active {
+  background:var(--blue-500);
+  border-color:var(--blue-500);
+  color:var(--white);
+  box-shadow:var(--shadow-blue);
+}
+
+/* PANEL */
+.panel { display:none; }
+.panel.active { display:block; animation:slideUp 0.22s ease; }
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* CARD */
+.card {
+  background:var(--white);
+  border-radius:var(--radius);
+  border:1px solid var(--gray-100);
+  box-shadow:var(--shadow-md);
+  overflow:hidden; margin-bottom:14px;
+}
+.card-header {
+  background:linear-gradient(135deg,var(--blue-50),var(--white));
+  padding:16px 18px 13px;
+  border-bottom:1px solid var(--gray-100);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.card-title {
+  font-family:'Clash Display',sans-serif;
+  font-size:17px; font-weight:700;
+  color:var(--blue-900); letter-spacing:-0.2px;
+}
+.card-sub { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.card-icon {
+  width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+  background:var(--blue-50);
+}
+.card-body { padding:18px; }
+
+/* INPUT GROUP */
+.input-group { margin-bottom:20px; }
+.input-row {
+  display:flex; justify-content:space-between;
+  align-items:center; margin-bottom:10px;
+}
+.input-label {
+  font-size:11.5px; font-weight:700;
+  color:var(--gray-600);
+  text-transform:uppercase; letter-spacing:0.6px;
+}
+.amount-input-wrap {
+  display:flex; align-items:center; gap:4px;
+  background:var(--blue-50);
+  border:1.5px solid var(--blue-100);
+  border-radius:var(--radius-xs);
+  padding:5px 10px;
+  transition:border-color 0.15s, box-shadow 0.15s;
+}
+.amount-input-wrap:focus-within {
+  border-color:var(--blue-500);
+  box-shadow:0 0 0 3px rgba(37,99,235,0.10);
+}
+.sym {
+  font-size:13px; font-weight:700; color:var(--blue-600);
+}
+.amount-field {
+  border:none; background:transparent;
+  font-family:'Clash Display',sans-serif;
+  font-size:15px; font-weight:700; color:var(--blue-700);
+  width:88px; text-align:right; outline:none;
+}
+.amount-field::-webkit-inner-spin-button,
+.amount-field::-webkit-outer-spin-button { -webkit-appearance:none; }
+.amount-field.narrow { width:52px; }
+
+input[type="range"] {
+  width:100%; height:5px; border-radius:3px;
+  outline:none; border:none; cursor:pointer;
+  -webkit-appearance:none;
+  accent-color:var(--blue-500);
+  background: linear-gradient(to right, var(--blue-400) 0%, var(--blue-400) var(--val,50%), var(--gray-200) var(--val,50%));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance:none;
+  width:20px; height:20px; border-radius:50%;
+  background:var(--blue-500);
+  border:3px solid var(--white);
+  box-shadow:0 2px 8px rgba(37,99,235,0.35);
+  cursor:pointer;
+}
+.range-mm {
+  display:flex; justify-content:space-between; margin-top:5px;
+  font-size:10px; color:var(--gray-400); font-weight:600;
+}
+
+/* RESULT CARD */
+.result-card {
+  background:linear-gradient(135deg,var(--blue-800),var(--blue-600));
+  border-radius:var(--radius);
+  padding:20px; margin-bottom:14px;
+  box-shadow:var(--shadow-blue);
+  position:relative; overflow:hidden;
+}
+.result-card::after {
+  content:'';
+  position:absolute;
+  right:-30px; top:-30px;
+  width:120px; height:120px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.result-card::before {
+  content:'';
+  position:absolute;
+  left:-20px; bottom:-40px;
+  width:100px; height:100px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.04);
+}
+.res-top {
+  display:flex; justify-content:space-between;
+  align-items:flex-start; margin-bottom:16px;
+  position:relative; z-index:1;
+}
+.res-label {
+  font-size:10px; color:rgba(255,255,255,0.55);
+  font-weight:700; text-transform:uppercase;
+  letter-spacing:0.8px; margin-bottom:5px;
+}
+.res-main {
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(26px,7vw,38px); font-weight:700;
+  color:var(--white); letter-spacing:-1px; line-height:1;
+}
+.res-pill {
+  background:rgba(16,185,129,0.2);
+  border:1px solid rgba(16,185,129,0.35);
+  color:#6ee7b7;
+  font-size:12px; font-weight:700;
+  padding:5px 11px; border-radius:20px; white-space:nowrap;
+}
+.res-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  position:relative; z-index:1;
+}
+.res-mini {
+  background:rgba(255,255,255,0.08);
+  border-radius:10px; padding:12px;
+  border:1px solid rgba(255,255,255,0.10);
+}
+.res-mini-label {
+  font-size:9.5px; color:rgba(255,255,255,0.50);
+  font-weight:700; text-transform:uppercase;
+  letter-spacing:0.5px; margin-bottom:4px;
+}
+.res-mini-val {
+  font-family:'Clash Display',sans-serif;
+  font-size:17px; font-weight:700; color:var(--white);
+}
+.prog-wrap { margin-top:14px; position:relative; z-index:1; }
+.prog-labels {
+  display:flex; justify-content:space-between; margin-bottom:6px;
+}
+.prog-labels span {
+  font-size:9.5px; color:rgba(255,255,255,0.50); font-weight:600;
+}
+.prog-track {
+  background:rgba(255,255,255,0.12);
+  height:6px; border-radius:3px; overflow:hidden;
+}
+.prog-fill {
+  height:100%; border-radius:3px;
+  background:linear-gradient(90deg,#6ee7b7,#10b981);
+  transition:width 0.45s ease;
+}
+
+/* YEAR TABLE */
+.tbl-head {
+  display:grid; grid-template-columns:36px 1fr 1fr 1fr;
+  padding:8px 12px;
+  background:var(--blue-50); border-radius:8px; margin-bottom:4px;
+}
+.tbl-head span {
+  font-size:10px; font-weight:800;
+  color:var(--blue-600); text-transform:uppercase; letter-spacing:0.5px;
+}
+.tbl-head span:not(:first-child) { text-align:right; }
+.tbl-row {
+  display:grid; grid-template-columns:36px 1fr 1fr 1fr;
+  padding:10px 12px;
+  border-bottom:1px solid var(--gray-100);
+  transition:background 0.15s;
+}
+.tbl-row:last-child { border-bottom:none; }
+.tbl-row:hover { background:var(--blue-50); }
+.yr-num {
+  font-size:11px; font-weight:800; color:var(--blue-500);
+  background:var(--blue-50); border-radius:6px;
+  width:24px; height:24px;
+  display:flex; align-items:center; justify-content:center;
+}
+.tbl-cell {
+  font-size:12px; font-weight:600;
+  color:var(--gray-800); text-align:right; align-self:center;
+}
+.tbl-cell.grn { color:var(--green); }
+
+/* COMPARE */
+.cmp-summary {
+  font-size:13px; font-weight:600; color:var(--gray-600);
+  text-align:center; margin-bottom:14px;
+  padding:10px 14px; background:var(--gray-100);
+  border-radius:var(--radius-xs);
+}
+.cmp-summary strong { color:var(--blue-600); }
+.cmp-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px;
+  border-radius:var(--radius-sm);
+  border:1.5px solid var(--gray-200);
+  background:var(--white);
+  margin-bottom:9px;
+  transition:all 0.2s;
+}
+.cmp-item.best {
+  border-color:var(--blue-500);
+  background:var(--blue-50);
+  box-shadow:0 0 0 3px rgba(37,99,235,0.07);
+}
+.cmp-left { display:flex; align-items:center; gap:12px; }
+.cmp-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.cmp-name { font-size:14px; font-weight:700; color:var(--gray-800); }
+.cmp-sub { font-size:11px; color:var(--gray-400); margin-top:1px; }
+.cmp-right { text-align:right; }
+.cmp-val {
+  font-family:'Clash Display',sans-serif;
+  font-size:19px; font-weight:700; color:var(--blue-700);
+}
+.cmp-gain { font-size:11px; font-weight:700; color:var(--green); margin-top:1px; }
+.best-badge {
+  font-size:9px; font-weight:800;
+  background:var(--blue-500); color:var(--white);
+  padding:2px 7px; border-radius:20px;
+  letter-spacing:0.5px; margin-left:6px;
+}
+
+/* TIP */
+.tip {
+  display:flex; gap:10px;
+  background:var(--blue-50);
+  border:1px solid var(--blue-100);
+  border-radius:var(--radius-sm);
+  padding:13px 15px; margin-top:4px;
+}
+.tip-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.tip-text { font-size:12px; color:var(--blue-700); line-height:1.65; font-weight:500; }
+.tip-text strong {
+  display:block; margin-bottom:2px;
+  font-size:10px; text-transform:uppercase; letter-spacing:0.5px;
+}
+
+.sec-label {
+  font-size:10.5px; font-weight:800; color:var(--gray-400);
+  text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;
+}
+
+/* FOOTER */
+.footer {
+  text-align:center; padding:20px 16px;
+  font-size:11px; color:var(--gray-400);
+  border-top:1px solid var(--gray-200);
+  margin-top:10px; background:var(--white);
+  line-height:1.8;
+}
+.footer strong { color:var(--blue-500); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="nav-logo">📈</div>
+    <div class="nav-title">Invest<span>Smart</span></div>
+  </div>
+  <div class="nav-tag">🇮🇳 India · Free</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-pill">No Login · Instant Results · 100% Free</div>
+  <h1>India Investment<br>Calculator</h1>
+  <p>Calculate RD, SIP & FD returns. Compare all options and find your best investment.</p>
+</div>
+
+<!-- STAT CHIPS -->
+<div class="stats-row">
+  <div class="stat-chip"><div class="val">6.7%</div><div class="lbl">PO RD</div></div>
+  <div class="stat-chip"><div class="val">7.1%</div><div class="lbl">PPF</div></div>
+  <div class="stat-chip"><div class="val">12%+</div><div class="lbl">SIP Avg</div></div>
+  <div class="stat-chip"><div class="val">7.7%</div><div class="lbl">NSC</div></div>
+</div>
+
+<div class="main">
+
+<!-- TABS -->
+<div class="tab-scroll">
+  <button class="tab-btn active" onclick="switchTab('rd')">📮 RD</button>
+  <button class="tab-btn" onclick="switchTab('sip')">📈 SIP</button>
+  <button class="tab-btn" onclick="switchTab('fd')">🏦 FD</button>
+  <button class="tab-btn" onclick="switchTab('compare')">⚡ Compare</button>
+</div>
+
+<!-- ═══ RD PANEL ═══ -->
+<div class="panel active" id="panel-rd">
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title">Post Office RD</div><div class="card-sub">Recurring Deposit · Quarterly Compounding</div></div>
+      <div class="card-icon">📮</div>
+    </div>
+    <div class="card-body">
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Monthly Amount</span>
+          <div class="amount-input-wrap">
+            <span class="sym">₹</span>
+            <input class="amount-field" type="number" id="rd-amt" value="500" min="100" max="100000"
+              oninput="linkSlider('rd-amt','rd-s-amt',100,100000);calcRD()">
+          </div>
+        </div>
+        <input type="range" id="rd-s-amt" min="100" max="100000" step="100" value="500"
+          oninput="linkField('rd-s-amt','rd-amt');calcRD()">
+        <div class="range-mm"><span>₹100</span><span>₹1,00,000</span></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Duration</span>
+          <div class="amount-input-wrap">
+            <input class="amount-field narrow" type="number" id="rd-yr" value="5" min="1" max="10"
+              oninput="linkSlider('rd-yr','rd-s-yr',1,10);calcRD()">
+            <span class="sym" style="color:var(--gray-400)">yr</span>
+          </div>
+        </div>
+        <input type="range" id="rd-s-yr" min="1" max="10" step="1" value="5"
+          oninput="linkField('rd-s-yr','rd-yr');calcRD()">
+        <div class="range-mm"><span>1 yr</span><span>10 yrs</span></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Interest Rate</span>
+          <div class="amount-input-wrap">
+            <input class="amount-field narrow" type="number" id="rd-rt" value="6.7" min="1" max="15" step="0.1"
+              oninput="linkSlider('rd-rt','rd-s-rt',1,15);calcRD()">
+            <span class="sym" style="color:var(--gray-400)">%</span>
+          </div>
+        </div>
+        <input type="range" id="rd-s-rt" min="1" max="15" step="0.1" value="6.7"
+          oninput="linkField('rd-s-rt','rd-rt');calcRD()">
+        <div class="range-mm"><span>1%</span><span>15%</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="res-top">
+      <div><div class="res-label">Maturity Amount</div><div class="res-main" id="rd-mat">₹35,485</div></div>
+      <div class="res-pill" id="rd-pill">+₹5,485</div>
+    </div>
+    <div class="res-grid">
+      <div class="res-mini"><div class="res-mini-label">Total Invested</div><div class="res-mini-val" id="rd-inv">₹30,000</div></div>
+      <div class="res-mini"><div class="res-mini-label">Interest Earned</div><div class="res-mini-val" id="rd-int">₹5,485</div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-labels"><span>Principal</span><span>Returns</span></div>
+      <div class="prog-track"><div class="prog-fill" id="rd-prog" style="width:15%"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="sec-label">Year-wise Breakdown</div>
+      <div class="tbl-head">
+        <span>Yr</span><span style="text-align:right">Invested</span>
+        <span style="text-align:right">Value</span><span style="text-align:right">Profit</span>
+      </div>
+      <div id="rd-tbl"></div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-icon">💡</div>
+    <div class="tip-text"><strong>Post Office RD</strong>Interest compounded quarterly. Government-backed, zero default risk. Minimum ₹100/month. Partial withdrawal after 3 years.</div>
+  </div>
+</div>
+
+<!-- ═══ SIP PANEL ═══ -->
+<div class="panel" id="panel-sip">
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title">Mutual Fund SIP</div><div class="card-sub">Monthly SIP · Market-linked Returns</div></div>
+      <div class="card-icon">📈</div>
+    </div>
+    <div class="card-body">
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Monthly SIP</span>
+          <div class="amount-input-wrap">
+            <span class="sym">₹</span>
+            <input class="amount-field" type="number" id="sip-amt" value="500" min="100" max="100000"
+              oninput="linkSlider('sip-amt','sip-s-amt',100,100000);calcSIP()">
+          </div>
+        </div>
+        <input type="range" id="sip-s-amt" min="100" max="100000" step="100" value="500"
+          oninput="linkField('sip-s-amt','sip-amt');calcSIP()">
+        <div class="range-mm"><span>₹100</span><span>₹1,00,000</span></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Duration</span>
+          <div class="amount-input-wrap">
+            <input class="amount-field narrow" type="number" id="sip-yr" value="10" min="1" max="40"
+              oninput="linkSlider('sip-yr','sip-s-yr',1,40);calcSIP()">
+            <span class="sym" style="color:var(--gray-400)">yr</span>
+          </div>
+        </div>
+        <input type="range" id="sip-s-yr" min="1" max="40" step="1" value="10"
+          oninput="linkField('sip-s-yr','sip-yr');calcSIP()">
+        <div class="range-mm"><span>1 yr</span><span>40 yrs</span></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Expected Return</span>
+          <div class="amount-input-wrap">
+            <input class="amount-field narrow" type="number" id="sip-rt" value="12" min="1" max="30" step="0.5"
+              oninput="linkSlider('sip-rt','sip-s-rt',1,30);calcSIP()">
+            <span class="sym" style="color:var(--gray-400)">%</span>
+          </div>
+        </div>
+        <input type="range" id="sip-s-rt" min="1" max="30" step="0.5" value="12"
+          oninput="linkField('sip-s-rt','sip-rt');calcSIP()">
+        <div class="range-mm"><span>1%</span><span>30%</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="res-top">
+      <div><div class="res-label">Estimated Value</div><div class="res-main" id="sip-mat">₹0</div></div>
+      <div class="res-pill" id="sip-pill">+₹0</div>
+    </div>
+    <div class="res-grid">
+      <div class="res-mini"><div class="res-mini-label">Total Invested</div><div class="res-mini-val" id="sip-inv">₹0</div></div>
+      <div class="res-mini"><div class="res-mini-label">Wealth Gained</div><div class="res-mini-val" id="sip-gain">₹0</div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-labels"><span>Principal</span><span>Returns</span></div>
+      <div class="prog-track"><div class="prog-fill" id="sip-prog" style="width:20%"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="sec-label">Year-wise Growth</div>
+      <div class="tbl-head">
+        <span>Yr</span><span style="text-align:right">Invested</span>
+        <span style="text-align:right">Value</span><span style="text-align:right">Gain</span>
+      </div>
+      <div id="sip-tbl"></div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-icon">⚠️</div>
+    <div class="tip-text"><strong>Market Disclaimer</strong>SIP returns are estimated. Actual mutual fund returns vary with market. Nifty 50 Index historically returns 11–13% over 10+ years. Past performance ≠ future results.</div>
+  </div>
+</div>
+
+<!-- ═══ FD PANEL ═══ -->
+<div class="panel" id="panel-fd">
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title">Fixed Deposit</div><div class="card-sub">Lump Sum · Quarterly Compounding</div></div>
+      <div class="card-icon">🏦</div>
+    </div>
+    <div class="card-body">
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Principal Amount</span>
+          <div class="amount-input-wrap">
+            <span class="sym">₹</span>
+            <input class="amount-field" type="number" id="fd-amt" value="10000" min="1000" max="10000000"
+              oninput="linkSlider('fd-amt','fd-s-amt',1000,1000000);calcFD()">
+          </div>
+        </div>
+        <input type="range" id="fd-s-amt" min="1000" max="1000000" step="1000" value="10000"
+          oninput="linkField('fd-s-amt','fd-amt');calcFD()">
+        <div class="range-mm"><span>₹1,000</span><span>₹10 L</span></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Duration</span>
+          <div class="amount-input-wrap">
+            <input class="amount-field narrow" type="number" id="fd-yr" value="3" min="1" max="10"
+              oninput="linkSlider('fd-yr','fd-s-yr',1,10);calcFD()">
+            <span class="sym" style="color:var(--gray-400)">yr</span>
+          </div>
+        </div>
+        <input type="range" id="fd-s-yr" min="1" max="10" step="1" value="3"
+          oninput="linkField('fd-s-yr','fd-yr');calcFD()">
+        <div class="range-mm"><span>1 yr</span><span>10 yrs</span></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Interest Rate</span>
+          <div class="amount-input-wrap">
+            <input class="amount-field narrow" type="number" id="fd-rt" value="7" min="1" max="12" step="0.1"
+              oninput="linkSlider('fd-rt','fd-s-rt',1,12);calcFD()">
+            <span class="sym" style="color:var(--gray-400)">%</span>
+          </div>
+        </div>
+        <input type="range" id="fd-s-rt" min="1" max="12" step="0.1" value="7"
+          oninput="linkField('fd-s-rt','fd-rt');calcFD()">
+        <div class="range-mm"><span>1%</span><span>12%</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="res-top">
+      <div><div class="res-label">Maturity Amount</div><div class="res-main" id="fd-mat">₹0</div></div>
+      <div class="res-pill" id="fd-pill">+₹0</div>
+    </div>
+    <div class="res-grid">
+      <div class="res-mini"><div class="res-mini-label">Principal</div><div class="res-mini-val" id="fd-inv">₹0</div></div>
+      <div class="res-mini"><div class="res-mini-label">Interest Earned</div><div class="res-mini-val" id="fd-int">₹0</div></div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-labels"><span>Principal</span><span>Returns</span></div>
+      <div class="prog-track"><div class="prog-fill" id="fd-prog" style="width:20%"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="sec-label">Year-wise Breakdown</div>
+      <div class="tbl-head">
+        <span>Yr</span><span style="text-align:right">Principal</span>
+        <span style="text-align:right">Value</span><span style="text-align:right">Interest</span>
+      </div>
+      <div id="fd-tbl"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMPARE PANEL ═══ -->
+<div class="panel" id="panel-compare">
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title">Compare All Options</div><div class="card-sub">Same monthly amount · Best highlighted</div></div>
+      <div class="card-icon">⚡</div>
+    </div>
+    <div class="card-body">
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Monthly Amount</span>
+          <div class="amount-input-wrap">
+            <span class="sym">₹</span>
+            <input class="amount-field" type="number" id="cmp-amt" value="1500" min="100" max="100000"
+              oninput="linkSlider('cmp-amt','cmp-s-amt',100,100000);calcCmp()">
+          </div>
+        </div>
+        <input type="range" id="cmp-s-amt" min="100" max="100000" step="100" value="1500"
+          oninput="linkField('cmp-s-amt','cmp-amt');calcCmp()">
+        <div class="range-mm"><span>₹100</span><span>₹1,00,000</span></div>
+      </div>
+
+      <div class="input-group">
+        <div class="input-row">
+          <span class="input-label">Duration</span>
+          <div class="amount-input-wrap">
+            <input class="amount-field narrow" type="number" id="cmp-yr" value="10" min="1" max="30"
+              oninput="linkSlider('cmp-yr','cmp-s-yr',1,30);calcCmp()">
+            <span class="sym" style="color:var(--gray-400)">yr</span>
+          </div>
+        </div>
+        <input type="range" id="cmp-s-yr" min="1" max="30" step="1" value="10"
+          oninput="linkField('cmp-s-yr','cmp-yr');calcCmp()">
+        <div class="range-mm"><span>1 yr</span><span>30 yrs</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="cmp-summary" id="cmp-sum"></div>
+  <div id="cmp-list"></div>
+
+  <div class="tip">
+    <div class="tip-icon">🎯</div>
+    <div class="tip-text"><strong>Smart Beginner Strategy</strong>Split your savings: 60–70% in Nifty 50 SIP for wealth growth + 30–40% in PO RD for safety. Build emergency fund first (3 months expenses), then invest the rest. Increase SIP every year as your income grows!</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="footer">
+  <strong>InvestSmart</strong> · Built for Indian investors 🇮🇳<br>
+  Rates as of FY 2025–26 · For educational use only · Not financial advice
+</div>
+
+<script>
+// ── HELPERS ──
+function fmt(n) {
+  n = Math.round(n);
+  if (n >= 10000000) return '₹' + (n/10000000).toFixed(2) + ' Cr';
+  if (n >= 100000)   return '₹' + (n/100000).toFixed(2) + ' L';
+  return '₹' + n.toLocaleString('en-IN');
+}
+function fmts(n) {
+  n = Math.round(n);
+  if (n >= 100000) return '₹' + (n/100000).toFixed(1) + 'L';
+  return '₹' + n.toLocaleString('en-IN');
+}
+function g(id) { return document.getElementById(id); }
+function gv(id) { return parseFloat(g(id).value) || 0; }
+
+function linkField(sliderId, fieldId) {
+  g(fieldId).value = g(sliderId).value;
+}
+function linkSlider(fieldId, sliderId, mn, mx) {
+  let v = parseFloat(g(fieldId).value);
+  if (isNaN(v)) return;
+  g(sliderId).value = Math.max(mn, Math.min(mx, v));
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + tab + "'"))
+      b.classList.add('active');
+  });
+  g('panel-' + tab).classList.add('active');
+}
+
+// ── RD ──
+function calcRD() {
+  const P = gv('rd-amt'), years = gv('rd-yr') || 1, r = gv('rd-rt') / 100;
+  const n = 4, months = years * 12;
+  let mat = 0;
+  for (let i = 1; i <= months; i++) {
+    const t = (months - i + 1) / 12;
+    mat += P * Math.pow(1 + r/n, n * t);
+  }
+  const inv = P * months, prf = mat - inv;
+  const pct = Math.min((prf / (inv || 1)) * 200, 100);
+
+  g('rd-mat').textContent  = fmt(mat);
+  g('rd-inv').textContent  = fmt(inv);
+  g('rd-int').textContent  = fmt(prf);
+  g('rd-pill').textContent = '+' + fmts(prf);
+  g('rd-prog').style.width = pct + '%';
+
+  let rows = '';
+  for (let y = 1; y <= years; y++) {
+    const m = y * 12;
+    let m2 = 0;
+    for (let i = 1; i <= m; i++) {
+      const t = (m - i + 1) / 12;
+      m2 += P * Math.pow(1 + r/n, n * t);
+    }
+    const i2 = P * m, p2 = m2 - i2;
+    rows += `<div class="tbl-row">
+      <div class="yr-num">${y}</div>
+      <div class="tbl-cell">${fmts(i2)}</div>
+      <div class="tbl-cell">${fmts(m2)}</div>
+      <div class="tbl-cell grn">+${fmts(p2)}</div>
+    </div>`;
+  }
+  g('rd-tbl').innerHTML = rows;
+}
+
+// ── SIP ──
+function calcSIP() {
+  const P = gv('sip-amt'), years = gv('sip-yr') || 1, r = gv('sip-rt') / 100 / 12;
+  const months = years * 12;
+  const mat = P * ((Math.pow(1 + r, months) - 1) / r) * (1 + r);
+  const inv = P * months, gain = mat - inv;
+  const pct = Math.min((gain / (inv || 1)) * 150, 100);
+
+  g('sip-mat').textContent  = fmt(mat);
+  g('sip-inv').textContent  = fmt(inv);
+  g('sip-gain').textContent = fmt(gain);
+  g('sip-pill').textContent = '+' + fmts(gain);
+  g('sip-prog').style.width = pct + '%';
+
+  let rows = '';
+  for (let y = 1; y <= Math.min(years, 15); y++) {
+    const m = y * 12;
+    const mv = P * ((Math.pow(1 + r, m) - 1) / r) * (1 + r);
+    const iv = P * m, gv2 = mv - iv;
+    rows += `<div class="tbl-row">
+      <div class="yr-num">${y}</div>
+      <div class="tbl-cell">${fmts(iv)}</div>
+      <div class="tbl-cell">${fmts(mv)}</div>
+      <div class="tbl-cell grn">+${fmts(gv2)}</div>
+    </div>`;
+  }
+  g('sip-tbl').innerHTML = rows;
+}
+
+// ── FD ──
+function calcFD() {
+  const P = gv('fd-amt'), years = gv('fd-yr') || 1, r = gv('fd-rt') / 100;
+  const n = 4;
+  const mat = P * Math.pow(1 + r/n, n * years);
+  const int = mat - P;
+  const pct = Math.min((int / (P || 1)) * 300, 100);
+
+  g('fd-mat').textContent  = fmt(mat);
+  g('fd-inv').textContent  = fmt(P);
+  g('fd-int').textContent  = fmt(int);
+  g('fd-pill').textContent = '+' + fmts(int);
+  g('fd-prog').style.width = pct + '%';
+
+  let rows = '';
+  for (let y = 1; y <= years; y++) {
+    const mv = P * Math.pow(1 + r/n, n * y);
+    const it = mv - P;
+    rows += `<div class="tbl-row">
+      <div class="yr-num">${y}</div>
+      <div class="tbl-cell">${fmts(P)}</div>
+      <div class="tbl-cell">${fmts(mv)}</div>
+      <div class="tbl-cell grn">+${fmts(it)}</div>
+    </div>`;
+  }
+  g('fd-tbl').innerHTML = rows;
+}
+
+// ── COMPARE ──
+function calcCmp() {
+  const P = gv('cmp-amt'), years = gv('cmp-yr') || 1;
+  const months = years * 12, invested = P * months;
+
+  // RD 6.7%
+  let rdMat = 0;
+  const rdR = 0.067, n = 4;
+  for (let i = 1; i <= months; i++) {
+    const t = (months - i + 1) / 12;
+    rdMat += P * Math.pow(1 + rdR/n, n * t);
+  }
+
+  const sipFn = rate => P * ((Math.pow(1 + rate/12, months) - 1) / (rate/12)) * (1 + rate/12);
+
+  const opts = [
+    { name:'Small Cap SIP',  sub:'Est. 15% p.a. · Higher risk',     val: sipFn(0.15), color:'#ef4444' },
+    { name:'ELSS SIP',       sub:'Est. 14% p.a. · 3yr lock-in',     val: sipFn(0.14), color:'#f59e0b' },
+    { name:'Nifty 50 SIP',   sub:'Est. 12% p.a. · Index fund',      val: sipFn(0.12), color:'#10b981' },
+    { name:'Post Office RD', sub:'6.7% p.a. · Guaranteed · Safe',   val: rdMat,       color:'#2563eb' },
+    { name:'POSA Savings',   sub:'4% p.a. · Fully liquid',          val: P*months*(1+0.04*years/2), color:'#94a3b8' },
+  ].sort((a,b) => b.val - a.val);
+
+  g('cmp-sum').innerHTML = `You invest <strong>${fmt(P)}/month</strong> for <strong>${years} year${years>1?'s':''}</strong> → Total: <strong>${fmt(invested)}</strong>`;
+
+  let html = '';
+  opts.forEach((o, i) => {
+    const gain = o.val - invested;
+    const pct  = ((gain / invested) * 100).toFixed(1);
+    html += `<div class="cmp-item ${i===0?'best':''}">
+      <div class="cmp-left">
+        <div class="cmp-dot" style="background:${o.color}"></div>
+        <div>
+          <div class="cmp-name">${o.name}${i===0?'<span class="best-badge">BEST</span>':''}</div>
+          <div class="cmp-sub">${o.sub}</div>
+        </div>
+      </div>
+      <div class="cmp-right">
+        <div class="cmp-val">${fmts(o.val)}</div>
+        <div class="cmp-gain">+${pct}% total gain</div>
+      </div>
+    </div>`;
+  });
+  g('cmp-list').innerHTML = html;
+}
+
+// Init
+calcRD(); calcSIP(); calcFD(); calcCmp();
+</script>
+</body>
+</html>
